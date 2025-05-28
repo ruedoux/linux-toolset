@@ -1,0 +1,20 @@
+{
+  "backup": {
+    "repository-paths": ["/repository/path"],
+    "includes": ["/file/path/or/folder/path"],
+    "excludes": ["/exclude/file/path"],
+    "remotes": ["my-server:/path/on/server/to/repository"]
+  },
+  "custom-commands": {
+    "ports": [
+      {
+        "command": "sudo  ss -lpntu",
+        "comment": "Listing open ports via 'ss -lpntu'"
+      },
+      {
+        "command": "sudo netstat -lpntu",
+        "comment": "Listing open ports via 'netstat -lpntu'"
+      }
+    ]
+  }
+}

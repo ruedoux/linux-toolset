@@ -1,0 +1,10 @@
+# Byte-compiled / cache
+*.py[cod]
+
+# Packaging
+build
+dist
+*.egg-info
+
+# Local config
+config.json
