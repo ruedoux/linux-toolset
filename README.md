@@ -23,10 +23,10 @@ usage: linux-toolset [-h] [-c CONFIG] {backup,custom-command} ...
 ## Examples
 
 ```sh
-linux-toolset --config /path/to/config.json backup
+linux-toolset backup --config /path/to/config.json
 # Performs a backup based on config.json
 
-linux-toolset --config /path/to/config.json custom-command health
+linux-toolset custom-command health --config /path/to/config.json
 # Runs the "health" custom command as defined in config.json
 ```
 
@@ -35,19 +35,20 @@ Example config.json:
 ```json
 {
   "backup": {
-    "repository-paths": ["/repository/path"],
+    "target-repositories": ["/repository/path"],
     "includes": ["/file/path/or/folder/path"],
-    "excludes": ["/exclude/file/path"],
-    "remotes": ["my-server:/path/on/server/to/repository"]
+    "excludes": [
+      "**/.git",
+      "**/bin",
+      "**/obj",
+      "**/build",
+      "**/*.egg-info",
+      "**/__pycache__"
+    ],
+    "copy-destinations": ["my-server:/path/on/server", "/some/local/path"]
   },
   "custom-commands": {
-    "health": [
-      {
-        "command": "echo works",
-        "comment": "health check"
-      }
-    ],
-    "ports": [
+    "open-ports": [
       {
         "command": "sudo  ss -lpntu",
         "comment": "Listing open ports via 'ss -lpntu'"
@@ -59,4 +60,5 @@ Example config.json:
     ]
   }
 }
+
 ```
