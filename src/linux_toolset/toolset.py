@@ -18,18 +18,35 @@ class Toolset:
         with tempfile.TemporaryDirectory() as temp_dir_path:
             include_file_path = f"{temp_dir_path}/i.txt"
             exclude_file_path = f"{temp_dir_path}/e.txt"
+            includes = config.backup.includes.copy()
+            excludes = config.backup.excludes.copy()
+
+            excludes = excludes + config.backup.matched_excludes
             with open(include_file_path, "w") as f:
-                for line in config.backup.includes:
+                for line in includes:
                     f.write(line + "\n")
             with open(exclude_file_path, "w") as f:
-                for line in config.backup.excludes:
+                for line in excludes:
                     f.write(line + "\n")
 
+            self.logger.info("Include paths:")
+            for path in includes:
+                self.logger.info(f"\t{path}")
+            self.logger.info("Exclude paths:")
+            for path in excludes:
+                self.logger.info(f"\t{path}")
+            self.logger.info("Local repository targets:")
+            for path in config.backup.target_repositories:
+                self.logger.info(f"\t{path}")
+            self.logger.info("Copy repository targets:")
+            for path in config.backup.copy_destinations:
+                self.logger.info(f"\t{path}")
+
             BackupCreator(logger=self.logger).backup_all(
-                repository_paths=config.backup.repository_paths,
+                local_repositories=config.backup.target_repositories,
                 include_file_path=include_file_path,
                 exclude_file_path=exclude_file_path,
-                remote_targets=config.backup.remotes,
+                copy_destinations=config.backup.copy_destinations,
             )
 
         self.logger.info(f"Done!")
@@ -64,7 +81,6 @@ class Toolset:
 
         parser = argparse.ArgumentParser(
             description="A toolset for GNU/Linux",
-            parents=[main_parser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
 

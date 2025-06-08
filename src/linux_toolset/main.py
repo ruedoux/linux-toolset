@@ -3,7 +3,7 @@ from linux_toolset.toolset import Toolset
 
 
 def main() -> None:
-    Toolset(logger=SimpleLogger()).parse_commands()
+    Toolset(logger=SimpleLogger(level="DEBUG")).parse_commands()
 
 
 if __name__ == "__main__":

@@ -1,12 +1,19 @@
 {
   "backup": {
-    "repository-paths": ["/repository/path"],
+    "target-repositories": ["/repository/path"],
     "includes": ["/file/path/or/folder/path"],
-    "excludes": ["/exclude/file/path"],
-    "remotes": ["my-server:/path/on/server/to/repository"]
+    "excludes": [
+      "**/.git",
+      "**/bin",
+      "**/obj",
+      "**/build",
+      "**/*.egg-info",
+      "**/__pycache__"
+    ],
+    "copy-destinations": ["my-server:/path/on/server", "/some/local/path"]
   },
   "custom-commands": {
-    "ports": [
+    "open-ports": [
       {
         "command": "sudo  ss -lpntu",
         "comment": "Listing open ports via 'ss -lpntu'"
