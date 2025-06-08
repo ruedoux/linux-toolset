@@ -18,7 +18,6 @@ pip install .
 
 ```
 usage: linux-toolset [-h] [-c CONFIG] {backup,custom-command} ...
-linux-toolset: error: the following arguments are required: command
 ```
 
 ## Examples
