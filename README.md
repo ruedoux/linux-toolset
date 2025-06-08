@@ -48,17 +48,12 @@ Example config.json:
     "copy-destinations": ["my-server:/path/on/server", "/some/local/path"]
   },
   "custom-commands": {
-    "open-ports": [
+    "health": [
       {
-        "command": "sudo  ss -lpntu",
-        "comment": "Listing open ports via 'ss -lpntu'"
-      },
-      {
-        "command": "sudo netstat -lpntu",
-        "comment": "Listing open ports via 'netstat -lpntu'"
+        "command": "echo works",
+        "comment": "health check"
       }
     ]
   }
 }
-
 ```
