@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 SETUP_SCRIPT_DIR="${SETUP_SCRIPT_DIR:-$(dirname "$SCRIPT_DIR")}"
+REPO_ROOT="$(dirname "$SETUP_SCRIPT_DIR")"
 
 source "$SETUP_SCRIPT_DIR/settings.env"
 source "$SETUP_SCRIPT_DIR/.lib.sh"
@@ -49,10 +50,13 @@ preflight_checks() {
     log_err "Drive $DRIVE is too small (<20 GiB). Found: $(( disk_size_bytes / 1073741824 )) GiB"
     exit 1
   fi
+  if (( disk_size_bytes < 53687091200 )); then  # 50 GiB
+    log_warn "Drive $DRIVE is under 50 GiB. Btrfs + snapper + Hyprland may fill the disk quickly."
+  fi
   log_ok "Drive $DRIVE is valid ($(( disk_size_bytes / 1073741824 )) GiB)"
 }
 
-confirm_drive() {
+warn_and_wait() {
   log_step "Target drive: $DRIVE"
   lsblk -o NAME,SIZE,MODEL,TYPE "$DRIVE" 2>/dev/null || log_warn "Could not display drive info"
   echo ""
@@ -75,7 +79,6 @@ partition_disk() {
   partprobe "$DRIVE"
   mkfs.fat -F32 "$EFI_PART"
 }
-
 
 setup_luks_partition() {
   local luks_pass="${SETUP_LUKS_PASSWORD:-}"
@@ -106,7 +109,6 @@ setup_btrfs_subvolumes() {
   mount -o "umask=0077" "$EFI_PART" /mnt/boot
 }
 
-
 detect_microcode_package() {
   local vendor
   vendor="$(grep -m1 -o 'GenuineIntel\|AuthenticAMD' /proc/cpuinfo || true)"
@@ -125,6 +127,10 @@ setup_chroot_env() {
   ucode_pkg="$(detect_microcode_package)"
 
   btrfs filesystem mkswapfile --size "$SWAP_SIZE" /mnt/swap/swapfile
+  if [[ ! -f /mnt/swap/swapfile ]]; then
+    log_err "Swapfile creation failed — /mnt/swap/swapfile does not exist"
+    exit 1
+  fi
   swapon /mnt/swap/swapfile
   # shellcheck disable=SC2086
   pacstrap -K /mnt $PACKAGES $ucode_pkg
@@ -202,12 +208,10 @@ run_chroot_script() {
   rm /mnt/root/chroot.sh /mnt/root/settings.env /mnt/root/.lib.sh
 }
 
-REPO_ROOT="$(dirname "$SETUP_SCRIPT_DIR")"
-
 copy_repository() {
-  mkdir -p "$SYSTEM_WIDE_DEST"
-  cp -r "$REPO_ROOT/." "$SYSTEM_WIDE_DEST"
-  chown -R root:root "$SYSTEM_WIDE_DEST"
+  mkdir -p "/mnt${SYSTEM_WIDE_DEST}"
+  cp -r "$REPO_ROOT/." "/mnt${SYSTEM_WIDE_DEST}"
+  chown -R root:root "/mnt${SYSTEM_WIDE_DEST}"
 }
 
 finish_setup() {
@@ -235,7 +239,7 @@ main() {
   trap cleanup_on_error ERR
   setup_logging
   run_step preflight_checks "running preflight checks"
-  run_step confirm_drive "confirming drive selection"
+  run_step warn_and_wait "drive destruction warning"
   run_step partition_disk "partitioning disk"
   run_step setup_luks_partition "setting up LUKS partition"
   run_step setup_btrfs_subvolumes "setting up btrfs subvolumes"
@@ -245,6 +249,7 @@ main() {
   run_step run_chroot_script "running chroot script"
   run_step copy_repository "copying repository to /opt"
   run_step finish_setup "finishing setup"
+  cleanup_passwords
   pause_before_reboot "Initial installation"
 }
 

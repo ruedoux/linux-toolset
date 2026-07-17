@@ -9,8 +9,8 @@ A fully automated, opinionated Arch Linux install & configuration system. Takes 
 | **Disk layout** | GPT: 1 GiB EFI + remaining as LUKS2 |
 | **Encryption** | LUKS2 on root partition (`/dev/mapper/cryptroot`) |
 | **Filesystem** | Btrfs with subvolumes: `@`, `@home`, `@swap`, `@var_log`, `@var_cache_pacman` |
-| **Boot** | Unified Kernel Images (UKI) via mkinitcpio + systemd-boot |
-| **Secure Boot** | Custom keys via `sbctl`, UKI signing, pacman hook for auto re-sign |
+| **Boot** | Unified Kernel Images (UKI) via mkinitcpio, booted directly via UEFI efibootmgr entries |
+| **Secure Boot** | Custom keys via `sbctl`, UKI signing, automatic re-sign via sbctl's built-in pacman hook |
 | **Snapshots** | `snapper` with automatic pre/post-pacman hooks |
 | **Firewall** | `nftables` (default-deny inbound, allow established/loopback/DHCP) |
 | **Desktop** | Hyprland, PipeWire audio, Bluetooth |

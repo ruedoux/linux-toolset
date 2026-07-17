@@ -52,6 +52,27 @@ parse_kernels() {
   IFS=' ' read -ra KERNEL_LIST <<< "$KERNELS"
   IFS='|' read -ra LABEL_LIST  <<< "$EFI_LABELS"
 
+  # Filter out empty elements from IFS splits (caused by trailing/double spaces)
+  local filtered_kernels=()
+  for k in "${KERNEL_LIST[@]}"; do
+    [[ -n "$k" ]] && filtered_kernels+=("$k")
+  done
+  KERNEL_LIST=("${filtered_kernels[@]}")
+
+  local filtered_labels=()
+  for l in "${LABEL_LIST[@]}"; do
+    [[ -n "$l" ]] && filtered_labels+=("$l")
+  done
+  LABEL_LIST=("${filtered_labels[@]}")
+
+  if [[ ${#KERNEL_LIST[@]} -eq 0 ]]; then
+    log_err "KERNELS is empty (or contained only whitespace)."
+    exit 1
+  fi
+  if [[ ${#LABEL_LIST[@]} -eq 0 ]]; then
+    log_err "EFI_LABELS is empty (or contained only delimiters)."
+    exit 1
+  fi
   if [[ ${#KERNEL_LIST[@]} -ne ${#LABEL_LIST[@]} ]]; then
     log_err "KERNELS count (${#KERNEL_LIST[@]}) does not match EFI_LABELS count (${#LABEL_LIST[@]})"
     exit 1
@@ -74,23 +95,22 @@ collect_passwords() {
   local phase="${1:-base}"
 
   local expected=()
-  local users=()
 
   if [[ "$phase" == "base" ]]; then
     expected+=("SETUP_LUKS_PASSWORD")
     expected+=("SETUP_ROOT_PASSWORD")
   fi
 
-  users+=("$ADMIN_USER")
-  for entry in "${DESKTOP_USERS[@]}"; do
-    local username="${entry%%:*}"
-    users+=("$username")
-  done
-
-  local unique_users=($(printf '%s\n' "${users[@]}" | sort -u))
-  for user in "${unique_users[@]}"; do
-    expected+=("SETUP_PASSWORD_${user}")
-  done
+  if [[ "$phase" == "base" ]]; then
+    expected+=("SETUP_PASSWORD_${ADMIN_USER}")
+  elif [[ "$phase" == "post-install" ]]; then
+    for entry in "${DESKTOP_USERS[@]}"; do
+      local username="${entry%%:*}"
+      if [[ "$username" != "$ADMIN_USER" ]]; then
+        expected+=("SETUP_PASSWORD_${username}")
+      fi
+    done
+  fi
 
   local missing=false
   for key in "${expected[@]}"; do
@@ -129,7 +149,7 @@ collect_passwords() {
     esac
 
     local password
-    read -rsp "  ${prompt_label}: " password
+    read -rsp "  ${prompt_label}: " password </dev/tty
     echo ""
     printf -v "$key" '%s' "$password"
     export "$key"
@@ -168,3 +188,11 @@ prime_sudo_cache() {
 }
 
 cleanup_sudo() { sudo -k 2>/dev/null || true; }
+
+cleanup_passwords() {
+  unset SETUP_LUKS_PASSWORD SETUP_ROOT_PASSWORD
+  for var in $(compgen -v SETUP_PASSWORD_ 2>/dev/null); do
+    unset "$var"
+  done
+  log_ok "Password environment variables cleared"
+}

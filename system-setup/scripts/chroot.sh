@@ -8,6 +8,12 @@ setup_locale() {
   ln -sf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime
   hwclock --systohc
   for locale in $LOCALES; do
+    if ! grep -q "^#\?${locale}" /etc/locale.gen; then
+      log_err "Locale '${locale}' not found in /etc/locale.gen"
+      exit 1
+    fi
+  done
+  for locale in $LOCALES; do
       sed -i "s/^#${locale}/${locale}/" /etc/locale.gen
   done
   locale-gen
@@ -16,9 +22,8 @@ setup_locale() {
 }
 
 enable_network_services() {
-  systemctl enable NetworkManager
-  systemctl enable systemd-resolved
-  systemctl enable nftables
+  # shellcheck disable=SC2086
+  systemctl enable $SYSTEMD_CHROOT_SERVICES
 }
 
 create_admin_user() {
@@ -115,6 +120,7 @@ seed_esp_random() {
 
 main() {
   setup_logging
+  trap 'log_err "Chroot setup failed with exit code ${?}"' ERR
   run_step setup_locale "setting up locale"
   run_step enable_network_services "enabling network services"
   run_step create_admin_user "creating admin user"

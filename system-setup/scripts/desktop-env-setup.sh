@@ -16,19 +16,19 @@ detect_and_install_gpu_drivers() {
   gpu_vendors=$(lspci -mm 2>/dev/null | grep -iE '"(VGA compatible controller|3D controller|Display controller)"' | cut -d '"' -f4 || true)
 
   if echo "$gpu_vendors" | grep -qi "intel"; then
-    drivers="$drivers mesa vulkan-intel intel-media-driver"
+    drivers="$drivers ${GPU_INTEL_DRIVERS}"
   fi
   if echo "$gpu_vendors" | grep -qiE "amd|advanced micro|ati"; then
-    drivers="$drivers mesa vulkan-radeon libva-mesa-driver"
+    drivers="$drivers ${GPU_AMD_DRIVERS}"
   fi
   if echo "$gpu_vendors" | grep -qi "nvidia"; then
-    drivers="$drivers ${NVIDIA_DRIVER} nvidia-utils"
+    drivers="$drivers ${GPU_NVIDIA_DRIVERS}"
   fi
 
   if [[ -n "$drivers" ]]; then
     log_ok "Detected GPU(s), installing:${drivers}"
     # shellcheck disable=SC2086
-    sudo pacman -S --noconfirm $drivers
+    sudo pacman -S --noconfirm --needed $drivers
   else
     log_warn "No recognized GPU; installing mesa as fallback"
     sudo pacman -S --noconfirm mesa
@@ -36,9 +36,9 @@ detect_and_install_gpu_drivers() {
 }
 
 # shellcheck disable=SC2086
-install_hyprland() { sudo pacman -S --noconfirm $HYPRLAND_PACKAGES; }
+install_hyprland() { sudo pacman -S --noconfirm --needed $HYPRLAND_PACKAGES; }
 # shellcheck disable=SC2086
-install_packages() { sudo pacman -S --noconfirm $OTHER_PACKAGES; }
+install_packages() { sudo pacman -S --noconfirm --needed $OTHER_PACKAGES; }
 
 create_desktop_users() {
   local entry username groups
@@ -95,29 +95,19 @@ setup_keys() {
   sudo sbctl enroll-keys -m
 }
 
-sign_kernel_images() {
-  IFS=' ' read -ra KERNEL_LIST <<< "$KERNELS"
-  for kernel in "${KERNEL_LIST[@]}"; do
-    sudo sbctl sign -s "/boot/EFI/Linux/arch-${kernel}.efi"
-  done
-}
+sign_all_images() {
+  sudo sbctl sign-all
 
-install_resign_hook() {
-  parse_kernels
-  {
-    echo "[Trigger]"
-    echo "Operation = Upgrade"
-    echo "Operation = Install"
-    echo "Type = Package"
-    for kernel in "${KERNEL_LIST[@]}"; do
-      echo "Target = ${kernel}"
+  local verify_output
+  verify_output=$(sudo sbctl verify 2>&1 || true)
+  if echo "$verify_output" | grep -q "not signed"; then
+    log_warn "Some EFI images are still unsigned:"
+    echo "$verify_output" | grep "not signed" | while read -r line; do
+      log_warn "  ${line}"
     done
-    echo ""
-    echo "[Action]"
-    echo "Description = Re-signing UKI images for Secure Boot (sbctl)..."
-    echo "When = PostTransaction"
-    echo "Exec = /usr/bin/sbctl sign-all"
-  } | sudo tee /etc/pacman.d/hooks/95-sbctl-sign.hook > /dev/null
+  else
+    log_ok "All EFI images verified signed"
+  fi
 }
 
 main() {
@@ -136,9 +126,9 @@ main() {
   # Secure Boot
   run_step verify_secure_boot_mode  "checking Secure Boot Setup Mode"
   run_step setup_keys               "generating and enrolling Secure Boot keys"
-  run_step sign_kernel_images       "signing UKI images"
-  run_step install_resign_hook      "installing pacman auto-resign hook"
+  run_step sign_all_images          "signing all EFI images"
 
+  cleanup_passwords
   pause_before_reboot "System setup"
 }
 
