@@ -263,7 +263,6 @@ update_wallpaper() {
 
 update_python() {
   pyenv install --skip-existing "$SL_PYENV_PYTHON_VER"
-  pyenv local $SL_PYENV_PYTHON_VER
   pyenv global $SL_PYENV_PYTHON_VER
   pip install --upgrade pip
   which python
