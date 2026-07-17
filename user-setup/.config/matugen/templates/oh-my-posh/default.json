@@ -1,0 +1,65 @@
+{
+  "blocks": [
+    {
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "foreground": "#ffffff",
+          "properties": {
+            "style": "full"
+          },
+          "style": "plain",
+          "template": "<{{colors.primary.default.hex}}>\u250f[</>\{{ .Path }}<{{colors.primary.default.hex}}>]</>",
+          "type": "path"
+        },
+        {
+          "foreground": "#ffffff",
+          "style": "plain",
+          "template": "<{{colors.primary.default.hex}}>[</>\{{ .HEAD }}<{{colors.primary.default.hex}}>]</>",
+          "type": "git"
+        },
+        {
+          "foreground": "#ffffff",
+          "style": "plain",
+          "template": "<{{colors.primary.default.hex}}>[</>\uf0e7<{{colors.primary.default.hex}}>]</>",
+          "type": "root"
+        },
+        {
+          "foreground": "#ffffff",
+          "style": "plain",
+          "template": "<{{colors.primary.default.hex}}>[</>\{{ .CurrentDate | date .Format }}<{{colors.primary.default.hex}}>]</>",
+          "type": "time",
+          "properties": {
+            "time_format": "15:04:05"
+          }
+        },
+        {
+          "foreground": "#ffffff",
+          "style": "plain",
+          "template": "<#ff4444>[x</>\{{ reason .Code }}<#ff4444>]</>",
+          "type": "status"
+        }
+      ],
+      "type": "prompt"
+    },
+    {
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "foreground": "#ffffff",
+          "properties": {
+            "style": "full"
+          },
+          "style": "plain",
+          "template": "<{{colors.primary.default.hex}}>\u2516[</>\{{ .UserName }}<{{colors.primary.default.hex}}>]></>",
+          "type": "session"
+        }
+      ],
+      "type": "prompt"
+    }
+  ],
+  "final_space": true,
+  "version": 3
+}

@@ -1,0 +1,8 @@
+{
+  "$SL_TEMPLATE_DIR/quickshell/Settings.qml": "$HOME/.config/quickshell/Settings.qml",
+  "$SL_TEMPLATE_DIR/hyprland/env-overrides.lua": "$HOME/.config/hypr/hyprland/env-overrides.lua",
+  "$SL_TEMPLATE_DIR/kvantum/kvantum.kvconfig": "$HOME/.config/Kvantum/kvantum.kvconfig",
+  "$SL_TEMPLATE_DIR/qt5ct/qt5ct.conf": "$HOME/.config/qt5ct/qt5ct.conf",
+  "$SL_TEMPLATE_DIR/qt6ct/qt6ct.conf": "$HOME/.config/qt6ct/qt6ct.conf",
+  "$SL_TEMPLATE_DIR/kitty/kitty.conf": "$HOME/.config/kitty/kitty.conf"
+}

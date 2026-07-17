@@ -1,0 +1,18 @@
+hl.exec_cmd("xdg-mime default zen.desktop text/html")
+hl.exec_cmd("xdg-mime default zen.desktop x-scheme-handler/http")
+hl.exec_cmd("xdg-mime default zen.desktop x-scheme-handler/https")
+hl.exec_cmd("xdg-mime default zen.desktop application/xhtml+xml")
+
+hl.exec_cmd("xdg-mime default mpv.desktop video/mp4")
+hl.exec_cmd("xdg-mime default mpv.desktop video/webm")
+hl.exec_cmd("xdg-mime default mpv.desktop video/x-matroska")
+hl.exec_cmd("xdg-mime default mpv.desktop video/quicktime")
+hl.exec_cmd("xdg-mime default mpv.desktop video/x-msvideo")
+hl.exec_cmd("xdg-mime default mpv.desktop video/ogg")
+hl.exec_cmd("xdg-mime default mpv.desktop video/mpeg")
+
+hl.exec_cmd("xdg-mime default feh.desktop image/jpeg")
+hl.exec_cmd("xdg-mime default feh.desktop image/png")
+hl.exec_cmd("xdg-mime default feh.desktop image/gif")
+hl.exec_cmd("xdg-mime default feh.desktop image/webp")
+hl.exec_cmd("xdg-mime default feh.desktop image/bmp")
