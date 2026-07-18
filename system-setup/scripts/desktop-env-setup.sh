@@ -96,18 +96,34 @@ setup_keys() {
 }
 
 sign_all_images() {
+  # Register each UKI with sbctl explicitly — sbctl sign-all does not detect UKIs
+  shopt -s nullglob
+  local uki_files=(/boot/EFI/Linux/*.efi)
+  shopt -u nullglob
+
+  if [[ ${#uki_files[@]} -eq 0 ]]; then
+    log_err "No UKI files found in /boot/EFI/Linux/"
+    exit 1
+  fi
+
+  for uki in "${uki_files[@]}"; do
+    log_step "Registering ${uki} with sbctl"
+    sudo sbctl sign -s "$uki"
+  done
+
   sudo sbctl sign-all
 
+  # Verify — fatal if anything is still unsigned
   local verify_output
   verify_output=$(sudo sbctl verify 2>&1 || true)
   if echo "$verify_output" | grep -q "not signed"; then
-    log_warn "Some EFI images are still unsigned:"
+    log_err "Some EFI images are still unsigned:"
     echo "$verify_output" | grep "not signed" | while read -r line; do
-      log_warn "  ${line}"
+      log_err "  ${line}"
     done
-  else
-    log_ok "All EFI images verified signed"
+    exit 1
   fi
+  log_ok "All EFI images verified signed"
 }
 
 main() {
