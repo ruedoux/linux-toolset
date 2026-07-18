@@ -279,6 +279,7 @@ update_flatpacks() {
 reload_all() {
   run_step update_bashrc "updating bashrc"
   run_step update_packages "updating packages"
+  source ~/.bashrc # for pyenv
   run_step update_python "updating python (pyenv)"
   run_step update_flatpacks "updating flatpacks"
   run_step update_wallpaper "updating wallpaper"

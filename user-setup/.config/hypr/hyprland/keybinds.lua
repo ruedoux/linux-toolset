@@ -5,6 +5,7 @@ hl.bind("SUPER + F", hl.dsp.exec_cmd("flatpak run app.zen_browser.zen"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd(terminal.." -e yazi"))
 hl.bind("SUPER + R", hl.dsp.exec_cmd("qs ipc call menu toggle"))
 hl.bind("SUPER + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
+hl.bind("SUPER + C", hl.dsp.exec_cmd(terminal.." -e nvim"))
 
 hl.bind("SUPER + SHIFT + C", hl.dsp.window.close())
 hl.bind("SUPER + SHIFT + L", hl.dsp.exec_cmd("hyprlock"))
