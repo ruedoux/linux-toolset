@@ -114,11 +114,14 @@ sign_all_images() {
   sudo sbctl sign-all
 
   # Verify — fatal if anything is still unsigned
+  # vmlinuz files are bundled inside UKIs and don't need separate signing
   local verify_output
   verify_output=$(sudo sbctl verify 2>&1 || true)
-  if echo "$verify_output" | grep -q "not signed"; then
+  local unsigned
+  unsigned=$(echo "$verify_output" | grep "not signed" | grep -v "vmlinuz" || true)
+  if [[ -n "$unsigned" ]]; then
     log_err "Some EFI images are still unsigned:"
-    echo "$verify_output" | grep "not signed" | while read -r line; do
+    echo "$unsigned" | while read -r line; do
       log_err "  ${line}"
     done
     exit 1
