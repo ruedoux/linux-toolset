@@ -48,7 +48,7 @@ setup_hyprland_autostart() {
   if ! grep -q "start-hyprland" "${HOME}/.bash_profile" 2>/dev/null; then
     cat >> "${HOME}/.bash_profile" << 'EOF'
 
-if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
+if [ -z "$WAYLAND_DISPLAY" ] && [[ -n "$XDG_VTNR" && "$XDG_VTNR" -eq 1 ]]; then
   start-hyprland
 fi
 EOF

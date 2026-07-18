@@ -106,7 +106,7 @@ setup_btrfs_subvolumes() {
   mount -o "rw,relatime,space_cache=v2,nodatacow,subvol=@swap" /dev/mapper/cryptroot /mnt/swap
   mount -o "${BTRFS_OPTS},subvol=@var_log" /dev/mapper/cryptroot /mnt/var/log
   mount -o "${BTRFS_OPTS},subvol=@var_cache_pacman" /dev/mapper/cryptroot /mnt/var/cache/pacman/pkg
-  mount -o "umask=0077" "$EFI_PART" /mnt/boot
+  mount -o "umask=0022" "$EFI_PART" /mnt/boot
 }
 
 detect_microcode_package() {
@@ -135,10 +135,17 @@ setup_chroot_env() {
   # shellcheck disable=SC2086
   pacstrap -K /mnt $PACKAGES $ucode_pkg
   genfstab -U /mnt >> /mnt/etc/fstab
+
+  # Make /boot unmounted after boot — mounted on-demand via systemd automount
+  # Also disable fsck on ESP (vfat can trip unnecessarily, btrfs handles integrity)
+  sed -i -e '/\/boot/s/rw,/noauto,x-systemd.automount,nofail,rw,/' \
+         -e '/\/boot/s/[[:space:]][0-9]$/ 0/' /mnt/etc/fstab
 }
 
 setup_kernel_settings() {
   sed -i 's/^HOOKS=.*/HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /mnt/etc/mkinitcpio.conf
+  # Include fsck.btrfs in initramfs so systemd-fsck doesn't fail on the btrfs root device
+  sed -i 's/^BINARIES=.*/BINARIES=(fsck.btrfs)/' /mnt/etc/mkinitcpio.conf
 
   local luks_uuid
   luks_uuid=$(blkid -s UUID -o value "$LUKS_PART")
@@ -177,8 +184,6 @@ table inet filter {
 
     udp dport 68 accept comment "allow DHCP client lease renewal"
 
-    counter
-    log prefix "nft-drop-input: " limit rate 5/minute
     drop
   }
 
@@ -189,8 +194,6 @@ table inet filter {
     ct state invalid drop comment  "early drop of invalid connections"
     ct state {established, related} accept comment "allow tracked connections"
 
-    counter
-    log prefix "nft-drop-forward: " limit rate 5/minute
     drop
   }
 }
