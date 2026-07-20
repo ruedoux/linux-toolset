@@ -276,6 +276,13 @@ update_flatpacks() {
   flatpak install flathub app.zen_browser.zen
 }
 
+setup_containers() {
+  containerd-rootless-setuptool.sh install
+  containerd-rootless-setuptool.sh install-buildkit
+  systemctl --user enable --now containerd
+  systemctl --user enable --now buildkit
+}
+
 reload_all() {
   run_step update_bashrc "updating bashrc"
   run_step update_packages "updating packages"
@@ -299,6 +306,7 @@ usage() {
   echo "  $SCRIPT_NAME update-wallpaper --path [path]"
   echo "  $SCRIPT_NAME remove-wallpaper --name [name]"
   echo "  $SCRIPT_NAME switch-theme-mode"
+  echo "  $SCRIPT_NAME setup_containers" 
 }
 
 case "$SL_THEME_MODE" in
@@ -354,6 +362,10 @@ case "${1:-}" in
   switch-theme-mode)
     shift
     run_step switch_theme_mode "switching theme mode"
+    ;;
+  setup-containers)
+    shift
+    run_step setup_containers "setting up containers"
     ;;
   *)
     usage

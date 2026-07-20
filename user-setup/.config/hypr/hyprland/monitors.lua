@@ -1,9 +1,13 @@
 hl.monitor({
-  output = "",
-  mode = "3324x1870@144",
-  position = "auto",
+  output = "DP-1",
+  mode = "3840x2160@144",
+  position = "2560x0",
   scale = "1",
-  supports_hdr = 1,
-  cm = "hdr",
-  bitdepth= 10
+})
+
+hl.monitor({
+  output = "HDMI-A-1",
+  mode = "2560x1440@144",
+  position = "0x360",
+  scale = "1",
 })

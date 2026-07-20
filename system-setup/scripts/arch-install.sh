@@ -106,7 +106,7 @@ setup_btrfs_subvolumes() {
   mount -o "rw,relatime,space_cache=v2,nodatacow,subvol=@swap" /dev/mapper/cryptroot /mnt/swap
   mount -o "${BTRFS_OPTS},subvol=@var_log" /dev/mapper/cryptroot /mnt/var/log
   mount -o "${BTRFS_OPTS},subvol=@var_cache_pacman" /dev/mapper/cryptroot /mnt/var/cache/pacman/pkg
-  mount -o "umask=0022" "$EFI_PART" /mnt/boot
+  mount -o "umask=0077" "$EFI_PART" /mnt/boot
 }
 
 detect_microcode_package() {

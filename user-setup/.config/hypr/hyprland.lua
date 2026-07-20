@@ -1,5 +1,6 @@
 require("hyprland/env")
 require("hyprland/env-overrides")
+require("hyprland/workspaces")
 require("hyprland/keybinds")
 require("hyprland/monitors")
 require("hyprland/default-apps")

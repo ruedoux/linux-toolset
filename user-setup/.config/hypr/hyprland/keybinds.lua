@@ -20,20 +20,28 @@ hl.bind("SUPER + SHIFT + 1", hl.dsp.window.move({ workspace = "1", follow = fals
 hl.bind("SUPER + SHIFT + 2", hl.dsp.window.move({ workspace = "2", follow = false }))
 hl.bind("SUPER + SHIFT + 3", hl.dsp.window.move({ workspace = "3", follow = false }))
 hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "4", follow = false }))
-hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "5", follow = false }))
-hl.bind("SUPER + SHIFT + 4", hl.dsp.window.move({ workspace = "6", follow = false }))
+hl.bind("SUPER + SHIFT + 5", hl.dsp.window.move({ workspace = "5", follow = false }))
+hl.bind("SUPER + SHIFT + 6", hl.dsp.window.move({ workspace = "6", follow = false }))
+
+-- Move focus
+hl.bind("SUPER + UP", hl.dsp.focus({ direction = "up" }))
+hl.bind("SUPER + DOWN", hl.dsp.focus({ direction = "down" }))
+hl.bind("SUPER + LEFT", hl.dsp.focus({ direction = "left" }))
+hl.bind("SUPER + RIGHT", hl.dsp.focus({ direction = "right" }))
 
 -- Move window
-hl.bind("SUPER + LEFT", hl.dsp.window.move({ direction = "left" }))
-hl.bind("SUPER + RIGHT", hl.dsp.window.move({ direction = "right" }))
-hl.bind("SUPER + UP", hl.dsp.window.move({ direction = "up" }))
-hl.bind("SUPER + DOWN", hl.dsp.window.move({ direction = "down" }))
+hl.bind("SUPER + ALT + LEFT", hl.dsp.window.move({ direction = "left" }))
+hl.bind("SUPER + ALT + RIGHT", hl.dsp.window.move({ direction = "right" }))
+hl.bind("SUPER + ALT + UP", hl.dsp.window.move({ direction = "up" }))
+hl.bind("SUPER + ALT + DOWN", hl.dsp.window.move({ direction = "down" }))
 
 -- Move to workspace
 hl.bind("SUPER + 1", hl.dsp.focus({ workspace = "1" }))
 hl.bind("SUPER + 2", hl.dsp.focus({ workspace = "2" }))
 hl.bind("SUPER + 3", hl.dsp.focus({ workspace = "3" }))
 hl.bind("SUPER + 4", hl.dsp.focus({ workspace = "4" }))
+hl.bind("SUPER + 5", hl.dsp.focus({ workspace = "5" }))
+hl.bind("SUPER + 6", hl.dsp.focus({ workspace = "6" }))
 
 -- Mouse
 hl.bind("ALT + mouse:272", hl.dsp.window.drag(), { mouse = true })    -- ALT + LMB: Move a window

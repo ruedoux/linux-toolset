@@ -185,6 +185,10 @@ down_container() {
   remove_container "$CONTAINER_NAME" "$COMPOSE_FILE"
 }
 
+setup_networks() {
+  nerdctl network create internet
+}
+
 case "${1:-}" in
   up-all)
     shift
