@@ -7,9 +7,9 @@ Singleton {
   readonly property string monitorName: "DP-1"
   readonly property real scale: 2 * 0.7
   readonly property string fontFamily: "CaskaydiaCove Nerd Font Mono"
-  readonly property int fontSize: 12 * scale 
+  readonly property int fontSize: 12 * scale
   readonly property string terminal: "kitty"
-
+  
   // Screen
   readonly property var screen: Quickshell.screens.find(s => s.name === monitorName) ?? Quickshell.screens[0]
   readonly property real screenWidth: screen?.width ?? 1920
@@ -43,8 +43,6 @@ Singleton {
   readonly property int wallpaperThumbnailCount: Math.max(1, Math.floor((screenWidth * 0.6) / (wallpaperThumbnailSize + marginMedium)))
   readonly property int wallpaperPanelWidth: (wallpaperThumbnailCount + 1) * wallpaperThumbnailSize
     + wallpaperThumbnailCount * marginMedium + marginMedium * 2
-  
-  // Paths
   readonly property string wallpapersDir: Quickshell.env("HOME") + "/.config/simple-linux/files/wallpapers"
   readonly property string slControllerPath: Quickshell.env("HOME") + "/.config/simple-linux/sl-controller.sh"
   readonly property string logPath: Quickshell.env("HOME") + "/.config/simple-linux/qs.log"

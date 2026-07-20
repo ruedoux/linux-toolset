@@ -1,10 +1,15 @@
 #!/bin/sh
-emit() { pactl get-sink-volume @DEFAULT_SINK@ | grep -o '[0-9]\+%' | head -1; }
+# PipeWire-native volume monitor — zero pactl/PA connections
+# wpctl talks to WirePlumber via D-Bus, pw-mon monitors PipeWire directly
 
-emit
+emit_vol() {
+  wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed -n 's/.*: \([0-9.]\+\).*/\1/p'
+}
 
-pactl subscribe | while read -r line; do
+emit_vol
+
+pw-mon | while read -r line; do
   case "$line" in
-    *"on sink"*|*"on server"*) emit ;;
+    *"changed"*) emit_vol ;;
   esac
 done

@@ -60,8 +60,8 @@ Singleton {
     command: ["sh", Qt.resolvedUrl("scripts/volume-events.sh").toString().replace("file://", "")]
     stdout: SplitParser {
       onRead: data => {
-        var n = parseInt(data.trim())
-        if (!isNaN(n)) volume = n
+        var f = parseFloat(data.trim())
+        if (!isNaN(f)) volume = Math.round(f * 100)
       }
     }
     Component.onCompleted: running = true
