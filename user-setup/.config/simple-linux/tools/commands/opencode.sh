@@ -4,15 +4,15 @@ set -euo pipefail
 
 . "${TOOLSET_SCRIPT_DIR}/global.sh"
 
-DEFAULT_DOCKER_PATH="$(toolset.set_if_exists "${HOME}/containers")"
-OPENCODE_VERSION="1.15.10"
+DEFAULT_DOCKER_PATH="/shared/containers"
+OPENCODE_VERSION="1.18.4"
 IMAGE="opencode-custom:$OPENCODE_VERSION"
 BUILD=false
 
 WORKSPACE="${WORKSPACE:-$(pwd)}"
 WORKSPACE="$(realpath "$WORKSPACE")"
 
-OPENCODE_CONFIG="${OPENCODE_CONFIG:-$HOME/.config/opencode}"
+OPENCODE_CONFIG="${OPENCODE_CONFIG:-/shared/opencode}"
 OPENCODE_CACHE="${OPENCODE_CACHE:-$HOME/.cache/opencode}"
 OPENCODE_SHARE="${OPENCODE_SHARE:-$HOME/.local/share/opencode}"
 OPENCODE_STATE="${OPENCODE_STATE:-$HOME/.local/state/opencode}"

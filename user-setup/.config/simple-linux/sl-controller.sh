@@ -9,14 +9,15 @@ export SL_WALLPAPERS_DIR="$SL_ROOT_DIR/files/wallpapers"
 export SL_WALLPAPER_SELECTED_FILE="$SL_WALLPAPERS_DIR/.selected"
 export SL_CONFIG_PATH="$SL_ROOT_DIR/config.env"
 export WALLPAPER_DEST_PATH="$SL_ROOT_DIR/files/wallpaper.png"
+export SL_LOG_FILE="${SL_LOG_FILE:-$SL_ROOT_DIR/sl-controller.log}"
 source "$SL_ROOT_DIR/.sl-lib.sh"
 set -a; source "$SL_CONFIG_PATH"; set +a;
 
-_get_biggest_monitor() { 
-  hyprctl monitors -j \
-    | jq '[.[] | { name, width, height, refreshRate }]' \
-    | jq -r 'max_by(.width * .height) | .name' 
-}
+# If not running in a terminal (e.g. via nohup or triggered by another process),
+# redirect all output to log file to prevent nohup.out pollution
+if [[ ! -t 1 ]]; then
+  exec >> "$SL_LOG_FILE" 2>&1
+fi
 
 _reload_program() {
   local process="$1"
@@ -167,6 +168,12 @@ update_bashrc() {
   rsync -a --backup --suffix=".bck" "$SL_ROOT_DIR/.bashrc" "$HOME/.bashrc"
 }
 
+update_monitors() {
+  source "$SL_ROOT_DIR/.sl-monitors-resolve.sh"
+  monitors_resolve
+  _render_templates "hyprland/(monitors|workspaces)"
+}
+
 update_themes() {
   local color_scheme="prefer-$SL_THEME_MODE"
   local gtk_theme="adw-gtk3-$SL_THEME_MODE"
@@ -189,7 +196,7 @@ update_themes() {
   gsettings set org.gnome.desktop.interface text-scaling-factor "$SL_UI_SCALE"
   gsettings set org.gnome.desktop.interface font-name "$SL_FONT $SL_FONT_SIZE"
 
-  _render_templates
+  _render_templates "^(?!hyprland/(monitors|workspaces))"
   _run_matugen
   _reload_program qs
 }
@@ -290,6 +297,7 @@ reload_all() {
   run_step update_python "updating python (pyenv)"
   run_step update_flatpacks "updating flatpacks"
   run_step update_wallpaper "updating wallpaper"
+  run_step update_monitors "updating monitors"
   run_step update_themes "updating themes"
 }
 
@@ -302,6 +310,7 @@ usage() {
   echo "  $SCRIPT_NAME update-bashrc"
   echo "  $SCRIPT_NAME update-python"
   echo "  $SCRIPT_NAME update-themes"
+  echo "  $SCRIPT_NAME update-monitors"
   echo "  $SCRIPT_NAME update-flatpacks"
   echo "  $SCRIPT_NAME update-wallpaper --path [path]"
   echo "  $SCRIPT_NAME remove-wallpaper --name [name]"
@@ -345,6 +354,10 @@ case "${1:-}" in
   update-themes)
     shift
     run_step update_themes "updating themes"
+    ;;
+  update-monitors)
+    shift
+    run_step update_monitors "updating monitors"
     ;;
   update-wallpaper)
     shift

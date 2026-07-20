@@ -7,6 +7,7 @@ hl.window_rule({match = {title = "^(Library)(.*)$" },                        cen
 hl.window_rule({match = {title = "^(File Upload)(.*)$" },                    center = true, float = true, size = {"(monitor_w*0.60)", "(monitor_h*0.65)"} })
 hl.window_rule({match = {title = "^(.*)(wants to save)$" },                  center = true, float = true, size = {"(monitor_w*0.60)", "(monitor_h*0.65)"} })
 hl.window_rule({match = {title = "^(.*)(wants to open)$" },                  center = true, float = true, size = {"(monitor_w*0.60)", "(monitor_h*0.65)"} })
+hl.window_rule({match = {title = "^(satty)$" },                              center = true, float = true, size = {"(monitor_w*0.60)", "(monitor_h*0.65)"} })
 hl.window_rule({match = {class = "^(pavucontrol)$" },                        float = true})
 hl.window_rule({match = {class = "^(pavucontrol)$" },                        size = {"(monitor_w*0.45)", "(monitor_h*0.45)"} })
 hl.window_rule({match = {class = "^(pavucontrol)$" },                        center = true})

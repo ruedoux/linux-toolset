@@ -20,6 +20,9 @@ copy_dots() {
     if [ -f "$subdir/config.env" ]; then
       preserve_args+=(--exclude=config.env)
     fi
+    if [[ "$name" == "simple-linux" ]]; then
+      preserve_args+=(--exclude=bashrc-extension.sh)
+    fi
 
     rsync -a --delete "${preserve_args[@]}" "$subdir" "$dest/"
 

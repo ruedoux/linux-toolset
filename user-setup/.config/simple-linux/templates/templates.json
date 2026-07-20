@@ -4,5 +4,7 @@
   "$SL_TEMPLATE_DIR/kvantum/kvantum.kvconfig": "$HOME/.config/Kvantum/kvantum.kvconfig",
   "$SL_TEMPLATE_DIR/qt5ct/qt5ct.conf": "$HOME/.config/qt5ct/qt5ct.conf",
   "$SL_TEMPLATE_DIR/qt6ct/qt6ct.conf": "$HOME/.config/qt6ct/qt6ct.conf",
-  "$SL_TEMPLATE_DIR/kitty/kitty.conf": "$HOME/.config/kitty/kitty.conf"
+  "$SL_TEMPLATE_DIR/kitty/kitty.conf": "$HOME/.config/kitty/kitty.conf",
+  "$SL_TEMPLATE_DIR/hyprland/monitors.lua": "$HOME/.config/hypr/hyprland/monitors.lua",
+  "$SL_TEMPLATE_DIR/hyprland/workspaces.lua": "$HOME/.config/hypr/hyprland/workspaces.lua"
 }

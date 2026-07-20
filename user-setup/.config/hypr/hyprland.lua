@@ -6,6 +6,7 @@ require("hyprland/monitors")
 require("hyprland/default-apps")
 require("hyprland/colors")
 require("hyprland/rules")
+require("hyprland/user-overrides")
 
 hl.config({
   general = {
