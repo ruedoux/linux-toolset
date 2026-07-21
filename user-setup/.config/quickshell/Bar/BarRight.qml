@@ -59,14 +59,14 @@ Item {
         anchors.centerIn: parent
         spacing: Settings.marginMedium
 
-        ContainerLabel { 
+        ContainerLabel {
           text: "󰍛" + String(BarServices.cpuUsage).padStart(3) + "%"
-          color: BarServices.processApp.running ? Colors.on_primary : Colors.on_background 
+          color: BarServices.processApp.running ? Colors.on_primary : Colors.on_background
         }
 
-        ContainerLabel { 
+        ContainerLabel {
           text: "" + String(BarServices.memUsage).padStart(3) + "%"
-          color: BarServices.processApp.running ? Colors.on_primary : Colors.on_background 
+          color: BarServices.processApp.running ? Colors.on_primary : Colors.on_background
         }
       }
 
@@ -140,10 +140,10 @@ Item {
     ContainerRectangle {
       implicitWidth: timeRow.implicitWidth + Settings.marginBig
 
-      ContainerLabel { 
+      ContainerLabel {
         id: timeRow
         anchors.centerIn: parent
-        text: "󰥔 " + BarServices.time 
+        text: "󰥔 " + BarServices.time
       }
     }
   }

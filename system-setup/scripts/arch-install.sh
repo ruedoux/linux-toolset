@@ -51,7 +51,7 @@ preflight_checks() {
     exit 1
   fi
   if (( disk_size_bytes < 53687091200 )); then  # 50 GiB
-    log_warn "Drive $DRIVE is under 50 GiB. Btrfs + snapper + Hyprland may fill the disk quickly."
+    log_warn "Drive $DRIVE is under 50 GiB. Btrfs + timeshift + Hyprland may fill the disk quickly."
   fi
   log_ok "Drive $DRIVE is valid ($(( disk_size_bytes / 1073741824 )) GiB)"
 }
@@ -143,9 +143,9 @@ setup_chroot_env() {
 }
 
 setup_kernel_settings() {
-  sed -i 's/^HOOKS=.*/HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /mnt/etc/mkinitcpio.conf
-  # Include fsck.btrfs in initramfs so systemd-fsck doesn't fail on the btrfs root device
-  sed -i 's/^BINARIES=.*/BINARIES=(fsck.btrfs)/' /mnt/etc/mkinitcpio.conf
+  sed -i 's/^HOOKS=.*/HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems)/' /mnt/etc/mkinitcpio.conf
+  # Btrfs does self-healing at mount time — no fsck needed in initramfs
+  sed -i 's/^BINARIES=.*/BINARIES=()/' /mnt/etc/mkinitcpio.conf
 
   local luks_uuid
   luks_uuid=$(blkid -s UUID -o value "$LUKS_PART")

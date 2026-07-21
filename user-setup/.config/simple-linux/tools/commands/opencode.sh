@@ -13,9 +13,9 @@ WORKSPACE="${WORKSPACE:-$(pwd)}"
 WORKSPACE="$(realpath "$WORKSPACE")"
 
 OPENCODE_CONFIG="${OPENCODE_CONFIG:-/shared/opencode}"
-OPENCODE_CACHE="${OPENCODE_CACHE:-$HOME/.cache/opencode}"
-OPENCODE_SHARE="${OPENCODE_SHARE:-$HOME/.local/share/opencode}"
-OPENCODE_STATE="${OPENCODE_STATE:-$HOME/.local/state/opencode}"
+OPENCODE_CACHE="${OPENCODE_CACHE:-/shared/containers-persistent/opencode/cache}"
+OPENCODE_SHARE="${OPENCODE_SHARE:-/shared/containers-persistent/opencode/share}"
+OPENCODE_STATE="${OPENCODE_STATE:-/shared/containers-persistent/opencode/state}"
 
 toolset.verify_variable_exists DEFAULT_DOCKER_PATH
 

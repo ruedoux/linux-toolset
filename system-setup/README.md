@@ -11,7 +11,7 @@ A fully automated, opinionated Arch Linux install & configuration system. Takes 
 | **Filesystem** | Btrfs with subvolumes: `@`, `@home`, `@swap`, `@var_log`, `@var_cache_pacman` |
 | **Boot** | Unified Kernel Images (UKI) via mkinitcpio, booted directly via UEFI efibootmgr entries |
 | **Secure Boot** | Custom keys via `sbctl`, UKI signing, automatic re-sign via sbctl's built-in pacman hook |
-| **Snapshots** | `snapper` with automatic pre/post-pacman hooks |
+| **Snapshots** | `timeshift` via Btrfs snapshots |
 | **Firewall** | `nftables` (default-deny inbound, allow established/loopback/DHCP) |
 | **Desktop** | Hyprland, PipeWire audio, Bluetooth |
 

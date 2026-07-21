@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_NAME="$(basename "${BASH_SOURCE[0]:-$0}")"
 . "${TOOLSET_SCRIPT_DIR}/global.sh"
 
-DEFAULT_CONFIG="$(toolset.set_if_exists "${HOME}/containers/config.json")"
-DEFAULT_COMPOSE="$(toolset.set_if_exists "${HOME}/containers/compose.yaml")"
+DEFAULT_CONFIG="/shared/containers/config.json"
+DEFAULT_COMPOSE="/shared/containers/compose.yaml"
 
 usage() {
   echo "Usage:"

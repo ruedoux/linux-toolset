@@ -7,22 +7,25 @@ read_stat() {
   echo "$total $idle"
 }
 
-sample1=$(read_stat)
-sleep 1
-sample2=$(read_stat)
+while true; do
+  sample1=$(read_stat)
+  sleep 1
+  sample2=$(read_stat)
 
-total1=$(echo "$sample1" | cut -d' ' -f1)
-idle1=$(echo "$sample1"  | cut -d' ' -f2)
-total2=$(echo "$sample2" | cut -d' ' -f1)
-idle2=$(echo "$sample2"  | cut -d' ' -f2)
+  total1=$(echo "$sample1" | cut -d' ' -f1)
+  idle1=$(echo "$sample1"  | cut -d' ' -f2)
+  total2=$(echo "$sample2" | cut -d' ' -f1)
+  idle2=$(echo "$sample2"  | cut -d' ' -f2)
 
-total_diff=$((total2 - total1))
-idle_diff=$((idle2 - idle1))
+  total_diff=$((total2 - total1))
+  idle_diff=$((idle2 - idle1))
 
-if [ "$total_diff" -gt 0 ]; then
-  usage=$(( 100 * (total_diff - idle_diff) / total_diff ))
-else
-  usage=0
-fi
+  if [ "$total_diff" -gt 0 ]; then
+    usage=$(( 100 * (total_diff - idle_diff) / total_diff ))
+  else
+    usage=0
+  fi
 
-printf "%-3d\n" "$usage"
+  printf "%-3d\n" "$usage"
+  sleep 1
+done

@@ -87,14 +87,4 @@ Singleton {
     precision: SystemClock.Seconds
   }
 
-  Timer {
-    interval: 500
-    running: true
-    repeat: true
-    onTriggered: {
-      cpuProcess.running = true
-      memoryProcess.running = true
-      networkProcess.running = true
-    }
-  }
 }

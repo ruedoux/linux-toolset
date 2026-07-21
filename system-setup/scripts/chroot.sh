@@ -48,42 +48,6 @@ create_admin_user() {
   visudo -c || { log_err "sudoers syntax check failed"; exit 1; }
 }
 
-setup_snapper() {
-  snapper --no-dbus -c root create-config /
-  chmod 750 /.snapshots
-  chown :wheel /.snapshots
-  sed -i 's/^ALLOW_USERS=.*/ALLOW_USERS="wheel"/' /etc/snapper/configs/root
-  sed -i 's/^ALLOW_GROUPS=.*/ALLOW_GROUPS="wheel"/' /etc/snapper/configs/root
-
-  mkdir -p /etc/pacman.d/hooks
-  cat > /etc/pacman.d/hooks/00-snapshot-pre.hook <<'EOF'
-[Trigger]
-Operation = Install
-Operation = Upgrade
-Operation = Remove
-Type = Package
-Target = *
-
-[Action]
-Description = Creating pre-transaction snapper snapshot...
-When = PreTransaction
-Exec = /usr/bin/snapper --no-dbus -c root create -d "pacman: pre-transaction" -t single
-EOF
-
-  cat > /etc/pacman.d/hooks/99-snapshot-post.hook <<'EOF'
-[Trigger]
-Operation = Install
-Operation = Upgrade
-Operation = Remove
-Type = Package
-Target = *
-
-[Action]
-Description = Creating post-transaction snapper snapshot...
-When = PostTransaction
-Exec = /usr/bin/snapper --no-dbus -c root create -d "pacman: post-transaction" -t single
-EOF
-}
 
 setup_uki() {
   mkdir -p /boot/EFI/Linux
@@ -124,7 +88,6 @@ main() {
   run_step setup_locale "setting up locale"
   run_step enable_network_services "enabling network services"
   run_step create_admin_user "creating admin user"
-  run_step setup_snapper "setting up snapper snapshots"
   run_step setup_uki "setting up UKI"
   run_step seed_esp_random "seeding random seed on ESP"
   run_step setup_efi_boot_entries "setting up efi boot entries"

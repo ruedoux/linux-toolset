@@ -1,0 +1,33 @@
+Jul 21 15:53:29 archlinux kernel: rust_binder: Loaded Rust Binder.
+Jul 21 15:53:29 archlinux kernel: ata7.00: Model 'Samsung SSD 870 EVO 1TB', rev 'SVT03B6Q', applying quirks: noncqtrim zeroaftertrim noncqonati nolpmonati
+Jul 21 15:53:29 archlinux kernel: ata7.00: supports DRM functions and may not be fully accessible
+Jul 21 15:53:29 archlinux kernel: ata7.00: supports DRM functions and may not be fully accessible
+Jul 21 15:53:29 archlinux kernel: nvme nvme0: missing or invalid SUBNQN field.
+Jul 21 15:54:00 arch kernel: ACPI Warning: SystemIO range 0x0000000000000B00-0x0000000000000B08 conflicts with OpRegion 0x0000000000000B00-0x0000000000000B0F (\GSA1.SMBI) (20250807/utaddress-204)
+Jul 21 15:54:00 arch (udev-worker)[776]: cfg80211: Process '/usr/bin/set-wireless-regdom' failed with exit code 1.
+Jul 21 15:54:03 arch dbus-broker-launch[922]: Activation request for 'org.freedesktop.home1' failed: The systemd unit 'dbus-org.freedesktop.home1.service' could not be found.
+Jul 21 15:54:03 arch NetworkManager[1004]: <warn>  [1784642043.2742] device (p2p-dev-wlp15s0): error setting IPv4 forwarding to '0': Resource temporarily unavailable
+Jul 21 15:54:03 arch systemd[1037]: buildkit.service: Failed with result 'exit-code'.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/42/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/60/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/4/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/28/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/28/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/90/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:03 arch kernel: overlayfs: upper fs does not support file handles, falling back to index=off.
+Jul 21 15:54:03 arch kernel: overlayfs: fs on '/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/83/fs' does not support file handles, falling back to xino=off.
+Jul 21 15:54:05 arch kernel: overlayfs: failed to set xattr on upper
+Jul 21 15:54:05 arch kernel: overlayfs: ...falling back to redirect_dir=nofollow.
+Jul 21 15:54:05 arch kernel: overlayfs: ...falling back to metacopy=off.
+Jul 21 15:54:05 arch kernel: overlayfs: ...falling back to index=off.
+Jul 21 15:54:05 arch kernel: overlayfs: ...falling back to uuid=null.
+Jul 21 15:54:05 arch kernel: overlayfs: ...falling back to xino=off.
+Jul 21 15:54:07 arch NetworkManager[1004]: ((../NetworkManager/src/libnm-systemd-core/src/libsystemd/sd-event/sd-event.c:4458)): assertion '<dropped>' failed
+Jul 21 15:54:08 arch kernel: TCP: eth1: Driver has suspect GRO implementation, TCP performance may be compromised.
+Jul 21 15:54:26 arch hyprpolkitagent[5041]: Failed to register with host portal QDBusError("org.freedesktop.portal.Error.Failed", "Could not register app ID: App info not found for ''")

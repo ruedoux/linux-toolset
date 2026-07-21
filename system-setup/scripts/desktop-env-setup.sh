@@ -148,6 +148,8 @@ main() {
   run_step sign_all_images          "signing all EFI images"
 
   cleanup_passwords
+  sudo sed -i 's/^#\s*\(WIRELESS_REGDOM="PL"\)/\1/' /etc/conf.d/wireless-regdom ## TODO put it in right place and make configurable in settings
+
   pause_before_reboot "System setup"
 }
 

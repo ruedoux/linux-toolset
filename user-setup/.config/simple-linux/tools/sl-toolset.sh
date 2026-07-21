@@ -22,7 +22,7 @@ script="${TOOLSET_SCRIPT_DIR}/commands/${cmd}.sh"
 
 if [[ -z "$cmd" || ! -x "$script" ]]; then
   usage
-  exit 1
+  return 1
 fi
 
 shift
