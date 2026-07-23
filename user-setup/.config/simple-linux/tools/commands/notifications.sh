@@ -15,6 +15,18 @@ create_alert() {
   printf "%b" "$alert_message" > "$alert_file"
 }
 
+send_notify() {
+  local title="$1"
+  local message="$2"
+  local urgency="${3:-normal}"
+
+  echo -e "${GREEN_COLOR}[NOTIFY]${NO_COLOR} ${message}"
+
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u "$urgency" "$title" "$message" 2>/dev/null || true
+  fi
+}
+
 list_alerts() {
   local alert_dir="$1"
 
@@ -56,8 +68,8 @@ remind() {
   local last_reminder_epoch
   last_reminder_epoch=$(cat "$last_reminder_file")
   if [ $((seconds_epoch - last_reminder_epoch)) -ge "$remind_seconds" ]; then
-    echo -e "${RED_COLOR}[REMINDER]${NO_COLOR} $reminder_content"
-    echo -e "[INFO] When done delete this file and message will disappear: $last_reminder_file"
+    send_notify "Reminder" "$reminder_content"
+    echo "$seconds_epoch" > "$last_reminder_file"
   fi
 }
 
@@ -186,6 +198,45 @@ cmd_remind() {
 }
 
 
+cmd_send_notify() {
+  local SCRIPT_NAME
+  SCRIPT_NAME="$(basename "${BASH_SOURCE[0]:-$0}")"
+  local title=""
+  local message=""
+  local urgency="normal"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -t|--title)
+        title="$2"
+        shift 2
+        ;;
+      -m|--message)
+        message="$2"
+        shift 2
+        ;;
+      -u|--urgency)
+        urgency="$2"
+        shift 2
+        ;;
+      -*)
+        echo "Unknown option: $1"
+        return 1
+        ;;
+      *)
+        break
+        ;;
+    esac
+  done
+
+  if [[ -z "$title" || -z "$message" ]]; then
+    echo "Usage: $SCRIPT_NAME send-notify -t <title> -m <message> [-u <urgency>]"
+    return 1
+  fi
+
+  send_notify "$title" "$message" "$urgency"
+}
+
 cmd_setup_smartd() {
   local alerts_dir="${TOOLSET_SCRIPT_DIR}/alerts"
   local email=""
@@ -250,12 +301,16 @@ case "$1" in
     shift
     cmd_remind "$@"
     ;;
+  send-notify)
+    shift
+    cmd_send_notify "$@"
+    ;;
   setup-smartd)
     shift
     cmd_setup_smartd "$@"
     ;;
   *)
-    echo "Usage: $SCRIPT_NAME [create-alert|list-alerts|remind|setup-smartd]"
+    echo "Usage: $SCRIPT_NAME [create-alert|list-alerts|remind|send-notify|setup-smartd]"
     exit 1
     ;;
 esac

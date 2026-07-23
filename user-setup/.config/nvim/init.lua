@@ -27,6 +27,7 @@ set_transparent()
 -- ============================================================================
 -- OPTIONS
 -- ============================================================================
+vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/site") -- add treesitter install dir to runtimepath
 vim.opt.number = true -- line number
 vim.opt.relativenumber = true -- relative line numbers
 vim.opt.cursorline = true -- highlight current line
@@ -314,13 +315,12 @@ end, { desc = "Toggle diagnostics" })
 
 local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
--- Format on save (ONLY real file buffers, ONLY when efm is attached)
+-- Format on save using attached LSP servers (real file buffers only)
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = augroup,
 	pattern = {
 		"*.lua",
 		"*.py",
-		"*.go",
 		"*.js",
 		"*.jsx",
 		"*.ts",
@@ -333,40 +333,19 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		"*.bash",
 		"*.zsh",
 		"*.c",
-    "*.cs",
+		"*.cs",
 		"*.cpp",
 		"*.h",
 		"*.hpp",
 	},
 	callback = function(args)
-		-- avoid formatting non-file buffers (helps prevent weird write prompts)
-		if vim.bo[args.buf].buftype ~= "" then
-			return
-		end
-		if not vim.bo[args.buf].modifiable then
-			return
-		end
-		if vim.api.nvim_buf_get_name(args.buf) == "" then
-			return
-		end
-
-		local has_efm = false
-		for _, c in ipairs(vim.lsp.get_clients({ bufnr = args.buf })) do
-			if c.name == "efm" then
-				has_efm = true
-				break
-			end
-		end
-		if not has_efm then
-			return
-		end
+		if vim.bo[args.buf].buftype ~= "" then return end
+		if not vim.bo[args.buf].modifiable then return end
+		if vim.api.nvim_buf_get_name(args.buf) == "" then return end
 
 		pcall(vim.lsp.buf.format, {
 			bufnr = args.buf,
 			timeout_ms = 2000,
-			filter = function(c)
-				return c.name == "efm"
-			end,
 		})
 	end,
 })
@@ -426,7 +405,6 @@ vim.pack.add({
 	-- Language Server Protocols
 	"https://www.github.com/neovim/nvim-lspconfig",
 	"https://github.com/mason-org/mason.nvim",
-	"https://github.com/creativenull/efmls-configs-nvim",
 	{
 		src = "https://github.com/saghen/blink.cmp",
 		version = vim.version.range("1.*"),
@@ -439,22 +417,37 @@ vim.pack.add({
 -- ============================================================================
 
 local setup_treesitter = function()
+	-- Check for C compiler – parsers must be compiled from source
+	local has_cc = vim.fn.executable("cc") == 1 or vim.fn.executable("gcc") == 1
+	if not has_cc then
+		vim.schedule(function()
+			vim.notify(
+				"[treesitter] No C compiler found (gcc/cc missing). "
+					.. "Install with: sudo pacman -S gcc\n"
+					.. "Then run :TSEnsure to install parsers.",
+				vim.log.levels.WARN
+			)
+		end)
+	end
+
 	local treesitter = require("nvim-treesitter")
 	treesitter.setup({})
+
 	local ensure_installed = {
-		"vim",
-		"vimdoc",
-		"rust",
+		"bash",
 		"c",
 		"cpp",
-		"go",
-		"html",
+		"c_sharp",
 		"css",
+		"html",
 		"json",
 		"lua",
 		"markdown",
+		"markdown_inline",
 		"python",
-		"bash",
+		"rust",
+		"vim",
+		"vimdoc",
 	}
 
 	local config = require("nvim-treesitter.config")
@@ -472,15 +465,22 @@ local setup_treesitter = function()
 		treesitter.install(parsers_to_install)
 	end
 
-	local group = vim.api.nvim_create_augroup("TreeSitterConfig", { clear = true })
-	vim.api.nvim_create_autocmd("FileType", {
-		group = group,
-		callback = function(args)
-			if vim.list_contains(config.get_installed(), vim.treesitter.language.get_lang(args.match)) then
-				vim.treesitter.start(args.buf)
+	-- User command to manually re-trigger parser installation
+	vim.api.nvim_create_user_command("TSEnsure", function()
+		local installed = config.get_installed()
+		local missing = {}
+		for _, parser in ipairs(ensure_installed) do
+			if not vim.tbl_contains(installed, parser) then
+				table.insert(missing, parser)
 			end
-		end,
-	})
+		end
+		if #missing == 0 then
+			vim.notify("[treesitter] All parsers installed ✓", vim.log.levels.INFO)
+		else
+			vim.notify("[treesitter] Installing: " .. table.concat(missing, ", "), vim.log.levels.INFO)
+			treesitter.install(missing)
+		end
+	end, {})
 end
 
 setup_treesitter()
@@ -565,6 +565,29 @@ vim.keymap.set("n", "<leader>hb", function()
 end, { desc = "Git blame/show" })
 
 require("mason").setup({})
+
+-- Auto-install LSP servers on startup (runs after Mason registry is ready)
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MasonUpdateCompleted",
+	callback = function()
+		local registry = require("mason-registry")
+		local servers = { "lua-language-server", "basedpyright", "clangd" }
+		for _, srv in ipairs(servers) do
+			local ok, pkg = pcall(registry.get_package, srv)
+			if not ok then
+				vim.notify("Mason: failed to look up package '" .. srv .. "'", vim.log.levels.WARN)
+			elseif pkg and not pkg:is_installed() then
+				vim.notify("Mason: installing " .. srv .. " ...", vim.log.levels.INFO)
+				local install_ok, err = pcall(pkg.install, pkg)
+				if not install_ok then
+					vim.notify("Mason: failed to install " .. srv .. ": " .. tostring(err), vim.log.levels.WARN)
+				end
+			elseif not pkg then
+				vim.notify("Mason: package '" .. srv .. "' not found in registry", vim.log.levels.WARN)
+			end
+		end
+	end,
+})
 
 -- ============================================================================
 -- LSP, Linting, Formatting & Completion
@@ -726,9 +749,7 @@ vim.lsp.config("lua_ls", {
 		},
 	},
 })
-vim.lsp.config("pyright", {})
-vim.lsp.config("bashls", {})
-vim.lsp.config("gopls", {})
+vim.lsp.config("basedpyright", {})
 vim.lsp.config("clangd", {})
 
 vim.g.rustaceanvim = {
@@ -737,74 +758,18 @@ vim.g.rustaceanvim = {
 	},
 }
 
-do
-	local luacheck = require("efmls-configs.linters.luacheck")
-	local stylua = require("efmls-configs.formatters.stylua")
+local lsp_servers = { "lua_ls", "basedpyright", "clangd" }
 
-	local prettier_d = require("efmls-configs.formatters.prettier_d")
-	local eslint_d = require("efmls-configs.linters.eslint_d")
-
-	local fixjson = require("efmls-configs.formatters.fixjson")
-
-	local shellcheck = require("efmls-configs.linters.shellcheck")
-	local shfmt = require("efmls-configs.formatters.shfmt")
-
-	local cpplint = require("efmls-configs.linters.cpplint")
-	local clangfmt = require("efmls-configs.formatters.clang_format")
-
-	vim.lsp.config("efm", {
-		filetypes = {
-			"c",
-      "cs",
-			"cpp",
-			"css",
-			"go",
-			"html",
-			"javascript",
-			"javascriptreact",
-			"json",
-			"jsonc",
-			"lua",
-			"markdown",
-			"python",
-			"sh",
-			"typescript",
-			"typescriptreact",
-			"vue",
-			"svelte",
-		},
-		init_options = { documentFormatting = true },
-		settings = {
-			languages = {
-				c = { clangfmt, cpplint },
-				go = { gofumpt, go_revive },
-				cpp = { clangfmt, cpplint },
-				css = { prettier_d },
-				html = { prettier_d },
-				javascript = { eslint_d, prettier_d },
-				javascriptreact = { eslint_d, prettier_d },
-				json = { eslint_d, fixjson },
-				jsonc = { eslint_d, fixjson },
-				lua = { luacheck, stylua },
-				markdown = { prettier_d },
-				python = { flake8, black },
-				sh = { shellcheck, shfmt },
-				typescript = { eslint_d, prettier_d },
-				typescriptreact = { eslint_d, prettier_d },
-				vue = { eslint_d, prettier_d },
-				svelte = { eslint_d, prettier_d },
-			},
-		},
-	})
+if vim.fn.executable("dotnet") == 1 then
+	table.insert(lsp_servers, "roslyn_ls")
+else
+	vim.notify_once(
+		"dotnet not found — roslyn_ls (C#) disabled. Install dotnet-sdk + roslyn-language-server.",
+		vim.log.levels.WARN
+	)
 end
 
-vim.lsp.enable({
-	"lua_ls",
-	"pyright",
-	"bashls",
-	"clangd",
-	"efm",
-})
+vim.lsp.enable(lsp_servers)
 
 -- ============================================================================
 -- FLOATING TERMINAL

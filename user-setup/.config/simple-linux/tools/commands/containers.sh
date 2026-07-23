@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_NAME="$(basename "${BASH_SOURCE[0]:-$0}")"
 . "${TOOLSET_SCRIPT_DIR}/global.sh"
 
-DEFAULT_CONFIG="/shared/containers/config.json"
-DEFAULT_COMPOSE="/shared/containers/compose.yaml"
+DEFAULT_CONFIG="${SL_CONTAINERS_CONFIG_FILE:-}"
+DEFAULT_COMPOSE="${SL_CONTAINERS_COMPOSE_FILE:-}"
 
 usage() {
   echo "Usage:"
@@ -120,8 +120,10 @@ parse_common_args() {
 }
 
 validate_files() {
-  [[ -n "${CONFIG_FILE:-}" && -f "$CONFIG_FILE" ]] || { error "Config file not found: ${CONFIG_FILE:-}"; return 1; }
-  [[ -n "${COMPOSE_FILE:-}" && -f "$COMPOSE_FILE" ]] || { error "Compose file not found: ${COMPOSE_FILE:-}"; return 1; }
+  [[ -n "${CONFIG_FILE:-}" ]] || { error "Config file not provided. Use -c/--config-file or set SL_CONTAINERS_CONFIG_FILE in config.env"; return 1; }
+  [[ -f "$CONFIG_FILE" ]] || { error "Config file not found: $CONFIG_FILE"; return 1; }
+  [[ -n "${COMPOSE_FILE:-}" ]] || { error "Compose file not provided. Use -f/--compose-file or set SL_CONTAINERS_COMPOSE_FILE in config.env"; return 1; }
+  [[ -f "$COMPOSE_FILE" ]] || { error "Compose file not found: $COMPOSE_FILE"; return 1; }
 }
 
 up_all_containers() {

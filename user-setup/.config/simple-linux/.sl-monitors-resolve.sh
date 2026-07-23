@@ -115,9 +115,21 @@ monitors_resolve() {
   done
   workspace_blocks="${workspace_blocks%"$'\n'"}"
 
+  # --- Generate hyprpaper blocks ---
+  local hyprpaper_blocks=""
+  for mon in "${monitor_order[@]}"; do
+    hyprpaper_blocks+="wallpaper {"$'\n'
+    hyprpaper_blocks+="  monitor = $mon"$'\n'
+    hyprpaper_blocks+="  path = ~/.config/simple-linux/files/wallpaper.png"$'\n'
+    hyprpaper_blocks+="  fit_mode = cover"$'\n'
+    hyprpaper_blocks+="}"$'\n'
+    hyprpaper_blocks+=$'\n'
+  done
+
   # Export blocks for the template renderer (sl-controller.sh _render_templates)
   export SL_MONITOR_BLOCKS="$monitor_blocks"
   export SL_WORKSPACE_BLOCKS="$workspace_blocks"
+  export SL_HYPRPAPER_BLOCKS="$hyprpaper_blocks"
   log_ok "Resolved monitors (${#monitor_order[@]} monitor(s): ${monitor_order[*]}, primary: $main_monitor)"
 }
 

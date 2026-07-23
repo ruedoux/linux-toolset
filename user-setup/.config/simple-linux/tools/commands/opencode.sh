@@ -4,7 +4,7 @@ set -euo pipefail
 
 . "${TOOLSET_SCRIPT_DIR}/global.sh"
 
-DEFAULT_DOCKER_PATH="/shared/containers"
+DEFAULT_DOCKER_PATH="${SL_CONTAINERS_DIR:-}"
 OPENCODE_VERSION="1.18.4"
 IMAGE="opencode-custom:$OPENCODE_VERSION"
 BUILD=false
@@ -12,12 +12,10 @@ BUILD=false
 WORKSPACE="${WORKSPACE:-$(pwd)}"
 WORKSPACE="$(realpath "$WORKSPACE")"
 
-OPENCODE_CONFIG="${OPENCODE_CONFIG:-/shared/opencode}"
-OPENCODE_CACHE="${OPENCODE_CACHE:-/shared/containers-persistent/opencode/cache}"
-OPENCODE_SHARE="${OPENCODE_SHARE:-/shared/containers-persistent/opencode/share}"
-OPENCODE_STATE="${OPENCODE_STATE:-/shared/containers-persistent/opencode/state}"
-
-toolset.verify_variable_exists DEFAULT_DOCKER_PATH
+OPENCODE_CONFIG="${OPENCODE_CONFIG:-${SL_OPENCODE_DIR:-}}"
+OPENCODE_CACHE="${OPENCODE_CACHE:-${SL_CONTAINERS_PERSISTENT_DIR:-}/opencode/cache}"
+OPENCODE_SHARE="${OPENCODE_SHARE:-${SL_CONTAINERS_PERSISTENT_DIR:-}/opencode/share}"
+OPENCODE_STATE="${OPENCODE_STATE:-${SL_CONTAINERS_PERSISTENT_DIR:-}/opencode/state}"
 
 mkdir -p $OPENCODE_CONFIG
 mkdir -p $OPENCODE_CACHE
@@ -34,6 +32,13 @@ if [[ "$BUILD" == true ]]; then
     -t "$IMAGE" \
     $DEFAULT_DOCKER_PATH
 fi
+
+validate_opencode_paths() {
+    [[ -n "${DEFAULT_DOCKER_PATH:-}" ]] || { error "SL_CONTAINERS_DIR not set. Add it to ${SL_CONFIG_PATH:-config.env}"; return 1; }
+    [[ -n "${OPENCODE_CONFIG:-}" ]] || { error "SL_OPENCODE_DIR not set. Add it to ${SL_CONFIG_PATH:-config.env}"; return 1; }
+    [[ -n "${SL_CONTAINERS_PERSISTENT_DIR:-}" ]] || { error "SL_CONTAINERS_PERSISTENT_DIR not set. Add it to ${SL_CONFIG_PATH:-config.env}"; return 1; }
+}
+validate_opencode_paths || exit 1
 
 nerdctl run --rm -it \
   --net internet \

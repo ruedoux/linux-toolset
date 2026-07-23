@@ -1,8 +1,8 @@
 # system-setup — Automated Arch Linux Installation
 
-A fully automated, opinionated Arch Linux install & configuration system. Takes a bare-metal machine (or VM) from Arch ISO boot to a ready-to-use Hyprland desktop with full-disk encryption, Btrfs snapshots, Unified Kernel Images, and Secure Boot signing.
+A fully automated Arch Linux install & configuration system. Takes a bare-metal machine (or VM) from Arch ISO boot to a ready-to-use Hyprland desktop with full-disk encryption, Btrfs snapshots, Unified Kernel Images, and Secure Boot signing.
 
-## What this sets up
+## Setup
 
 | Feature | Details |
 |---|---|
@@ -11,7 +11,7 @@ A fully automated, opinionated Arch Linux install & configuration system. Takes 
 | **Filesystem** | Btrfs with subvolumes: `@`, `@home`, `@swap`, `@var_log`, `@var_cache_pacman` |
 | **Boot** | Unified Kernel Images (UKI) via mkinitcpio, booted directly via UEFI efibootmgr entries |
 | **Secure Boot** | Custom keys via `sbctl`, UKI signing, automatic re-sign via sbctl's built-in pacman hook |
-| **Snapshots** | `timeshift` via Btrfs snapshots |
+| **Snapshots** | `timeshift` installed for Btrfs snapshots (manual configuration required) |
 | **Firewall** | `nftables` (default-deny inbound, allow established/loopback/DHCP) |
 | **Desktop** | Hyprland, PipeWire audio, Bluetooth |
 
@@ -28,8 +28,8 @@ A fully automated, opinionated Arch Linux install & configuration system. Takes 
 ### 1. Boot Arch ISO, clone the repo
 
 ```bash
-git clone <repo-url> /tmp/system-setup
-cd /tmp/system-setup
+git clone <repo-url> /tmp/simple-linux
+cd /tmp/simple-linux/system-setup
 ```
 
 ### 2. Configure

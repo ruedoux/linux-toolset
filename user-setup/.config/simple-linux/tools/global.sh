@@ -6,6 +6,21 @@ BLUE_COLOR='\033[0;34m'
 PURPLE_COLOR='\033[0;35m'
 NO_COLOR='\033[0m'
 
+# Source config.env if it exists (relative to the tools/ directory)
+SL_ROOT_DIR="${SL_ROOT_DIR:-$(dirname "$TOOLSET_SCRIPT_DIR")}"
+SL_CONFIG_PATH="${SL_CONFIG_PATH:-$SL_ROOT_DIR/config.env}"
+if [ -f "$SL_CONFIG_PATH" ]; then
+    set -a; source "$SL_CONFIG_PATH"; set +a
+fi
+
+toolset.require_var() {
+    local var_name="$1"
+    if [ -z "${!var_name:-}" ]; then
+        error "Variable $var_name is not set. Please add it to ${SL_CONFIG_PATH:-config.env}"
+        return 1
+    fi
+}
+
 info() { echo -e "${BLUE_COLOR}[INFO]${NO_COLOR} $@"; }
 error() { echo -e "${RED_COLOR}[ERROR]${NO_COLOR} $@"; }
 debug() {

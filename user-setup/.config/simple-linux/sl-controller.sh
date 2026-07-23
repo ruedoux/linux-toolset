@@ -164,14 +164,29 @@ update_packages() {
   done
 }
 
-update_bashrc() { 
+update_bashrc() {
   rsync -a --backup --suffix=".bck" "$SL_ROOT_DIR/.bashrc" "$HOME/.bashrc"
+}
+
+update_yazi_desktop() {
+  mkdir -p "$HOME/.local/share/applications"
+  cat > "$HOME/.local/share/applications/yazi.desktop" << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=Yazi File Manager
+Exec=kitty --class yazi -e yazi %U
+Terminal=false
+Categories=System;FileTools;FileManager;
+MimeType=inode/directory;
+NoDisplay=true
+EOF
+  update-desktop-database "$HOME/.local/share/applications/"
 }
 
 update_monitors() {
   source "$SL_ROOT_DIR/.sl-monitors-resolve.sh"
   monitors_resolve
-  _render_templates "hyprland/(monitors|workspaces)"
+  _render_templates "hyprland/(monitors|workspaces|hyprpaper)"
 }
 
 update_themes() {
@@ -196,7 +211,7 @@ update_themes() {
   gsettings set org.gnome.desktop.interface text-scaling-factor "$SL_UI_SCALE"
   gsettings set org.gnome.desktop.interface font-name "$SL_FONT $SL_FONT_SIZE"
 
-  _render_templates "^(?!hyprland/(monitors|workspaces))"
+  _render_templates "^(?!hyprland/(monitors|workspaces|hyprpaper))"
   _run_matugen
   _reload_program qs
 }
@@ -292,6 +307,7 @@ setup_containers() {
 
 reload_all() {
   run_step update_bashrc "updating bashrc"
+  run_step update_yazi_desktop "installing yazi desktop entry"
   run_step update_packages "updating packages"
   source ~/.bashrc # for pyenv
   run_step update_python "updating python (pyenv)"
@@ -315,7 +331,7 @@ usage() {
   echo "  $SCRIPT_NAME update-wallpaper --path [path]"
   echo "  $SCRIPT_NAME remove-wallpaper --name [name]"
   echo "  $SCRIPT_NAME switch-theme-mode"
-  echo "  $SCRIPT_NAME setup_containers" 
+  echo "  $SCRIPT_NAME setup-containers"
 }
 
 case "$SL_THEME_MODE" in

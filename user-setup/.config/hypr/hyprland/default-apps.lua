@@ -16,3 +16,5 @@ hl.exec_cmd("xdg-mime default feh.desktop image/png")
 hl.exec_cmd("xdg-mime default feh.desktop image/gif")
 hl.exec_cmd("xdg-mime default feh.desktop image/webp")
 hl.exec_cmd("xdg-mime default feh.desktop image/bmp")
+
+hl.exec_cmd("xdg-mime default yazi.desktop inode/directory")

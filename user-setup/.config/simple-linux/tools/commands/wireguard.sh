@@ -1,5 +1,6 @@
 #!/bin/bash
-
+#WIP IGNORE THIS SCRIPT
+#
 . "${TOOLSET_SCRIPT_DIR}/global.sh"
 
 usage() { echo "Usage: $SCRIPT_NAME [setup-remote|setup-local]"; }
